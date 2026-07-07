@@ -866,7 +866,7 @@ From 0.1 to 0.2:
 THANKS TO
 ---------
 
-Volker Barthelmann, Neil Booth, Stephen Davies, Stéphane Ecolivet,
+Volker Barthelmann, Neil Booth, Stephen Davies, StÃ©phane Ecolivet,
 Marc Espie, Marcus Holland-Moritz, Antoine Leca, Cyrille Lefevre,
 Dave Rivers, Loic Tortay and Laurent Wacrenier, for suggestions and
 beta-testing.
@@ -878,3 +878,10 @@ Dave Brolley, Jamie Lokier and Neil Booth, for discussion about tricky
 points on nesting macros.
 
 Brian Kernighan and Dennis Ritchie, for bringing C to mortal Men.
+
+POSTSCRIPT
+----------
+
+I added necessary tooling to turn ucpp into a library. It has SWIG bindings and a CFFI file for Python.
+
+- Chubak
