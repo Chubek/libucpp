@@ -3,7 +3,7 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PYUCPP_DIR="$ROOT_DIR/pyucpp"
-SETUP_ARGS=${SETUP_ARGS:-install}
+SETUP_ARGS=${SETUP_ARGS:-install --user}
 
 cd "$ROOT_DIR"
 
@@ -58,6 +58,7 @@ setup(
     ],
     data_files=[("", ["libucpp.so"])],
     cmdclass={"build_ext": BuildExt},
+    options={"egg_info": {"egg_base": "build"}},
 )
 PYEOF
 

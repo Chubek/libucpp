@@ -112,7 +112,7 @@ SWIG_INTERFACE = ucpp.i
 all: ucpp $(LIB_STATIC) $(LIB_SHARED)
 
 clean:
-	@rm -rf *.o ucpp core *.a *.so pyucpp
+	@rm -rf *.o ucpp core *.a *.so pyucpp ucpp_wrap.*
 
 install: all
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(libdir) \
