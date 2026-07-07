@@ -2542,6 +2542,7 @@ static int parse_opt(int argc, char *argv[], struct lexer_state *ls)
 	return ret;
 }
 
+#ifndef UCPP_NO_SHARED_LIB
 int main(int argc, char *argv[])
 {
 	struct lexer_state ls;
@@ -2562,4 +2563,5 @@ int main(int argc, char *argv[])
 #endif
 	return fr ? EXIT_FAILURE : EXIT_SUCCESS;
 }
+#endif
 #endif

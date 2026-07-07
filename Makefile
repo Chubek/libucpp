@@ -28,6 +28,8 @@
 
 .POSIX:
 
+.PHONY: all clean install
+
 # ----- user configurable part -----
 
 # Edit the variables to suit your system.
@@ -87,29 +89,76 @@ endif
 
 # ----- nothing should be changed below this line -----
 
-COBJ = mem.o nhash.o cpp.o lexer.o assert.o macro.o eval.o
+LIBSRC = mem.c nhash.c cpp.c lexer.c assert.c macro.c eval.c
+LIBOBJ = $(LIBSRC:.c=.o)
+PICOBJ = $(LIBSRC:.c=.pic.o)
 CFLAGS = $(FLAGS)
+CPPFLAGS =
+AR = ar
+ARFLAGS = cq
+RANLIB = ranlib
+INSTALL = install
+PREFIX = /usr/local
+DESTDIR =
+bindir = $(PREFIX)/bin
+libdir = $(PREFIX)/lib
+includedir = $(PREFIX)/include/ucpp
+mandir = $(PREFIX)/share/man
+LIB_STATIC = libucpp.a
+LIB_SHARED = libucpp.so
+PUBLIC_HEADERS = cpp.h mem.h nhash.h arith.h tune.h config.h
+SWIG_INTERFACE = ucpp.i
 
-all: ucpp
-	@ar cq libucpp.a *.o
+all: ucpp $(LIB_STATIC) $(LIB_SHARED)
 
 clean:
-	@rm -f *.o ucpp core *.a
+	@rm -f *.o ucpp core *.a *.so
 
-ucpp: $(COBJ)
+install: all
+	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(libdir) \
+		$(DESTDIR)$(includedir) $(DESTDIR)$(mandir)/man1
+	$(INSTALL) -m 755 ucpp $(DESTDIR)$(bindir)/ucpp
+	$(INSTALL) -m 644 $(LIB_STATIC) $(DESTDIR)$(libdir)/$(LIB_STATIC)
+	$(INSTALL) -m 755 $(LIB_SHARED) $(DESTDIR)$(libdir)/$(LIB_SHARED)
+	$(INSTALL) -m 644 $(PUBLIC_HEADERS) $(SWIG_INTERFACE) $(DESTDIR)$(includedir)
+	$(INSTALL) -m 644 ucpp.1 $(DESTDIR)$(mandir)/man1/ucpp.1
+
+ucpp: $(LIBOBJ)
 	@$(FINAL_STEP)
 
+$(LIB_STATIC): $(PICOBJ)
+	@$(AR) $(ARFLAGS) $@ $(PICOBJ)
+	@$(RANLIB) $@
+
+$(LIB_SHARED): $(PICOBJ)
+	@$(CC) -shared $(PICOBJ) $(LDFLAGS) $(LIBS) -o $@
+
 assert.o: tune.h ucppi.h cpp.h nhash.h mem.h
-	@$(CC) $(CFLAGS) -c assert.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c assert.c
 cpp.o: tune.h ucppi.h cpp.h nhash.h mem.h
-	@$(CC) $(CFLAGS) -c cpp.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c cpp.c
 eval.o: tune.h ucppi.h cpp.h nhash.h mem.h arith.c arith.h
-	@$(CC) $(CFLAGS) -c eval.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c eval.c
 lexer.o: tune.h ucppi.h cpp.h nhash.h mem.h
-	@$(CC) $(CFLAGS) -c lexer.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c lexer.c
 macro.o: tune.h ucppi.h cpp.h nhash.h mem.h
-	@$(CC) $(CFLAGS) -c macro.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c macro.c
 mem.o: mem.h
-	@$(CC) $(CFLAGS) -c mem.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c mem.c
 nhash.o: nhash.h mem.h
-	@$(CC) $(CFLAGS) -c nhash.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c nhash.c
+
+assert.pic.o: tune.h ucppi.h cpp.h nhash.h mem.h
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DUCPP_NO_SHARED_LIB -c assert.c -o $@
+cpp.pic.o: tune.h ucppi.h cpp.h nhash.h mem.h
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DUCPP_NO_SHARED_LIB -c cpp.c -o $@
+eval.pic.o: tune.h ucppi.h cpp.h nhash.h mem.h arith.c arith.h
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DUCPP_NO_SHARED_LIB -c eval.c -o $@
+lexer.pic.o: tune.h ucppi.h cpp.h nhash.h mem.h
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DUCPP_NO_SHARED_LIB -c lexer.c -o $@
+macro.pic.o: tune.h ucppi.h cpp.h nhash.h mem.h
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DUCPP_NO_SHARED_LIB -c macro.c -o $@
+mem.pic.o: mem.h
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DUCPP_NO_SHARED_LIB -c mem.c -o $@
+nhash.pic.o: nhash.h mem.h
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DUCPP_NO_SHARED_LIB -c nhash.c -o $@
