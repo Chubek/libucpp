@@ -63,4 +63,4 @@ setup(
 PYEOF
 
 cd "$PYUCPP_DIR"
-python3 setup.py $SETUP_ARGS
+sudo pip installl -e .
